@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi UZ – Tez, qulay va ishonchli taksi</title>
+
+    <style>
+        :root {
+            --yellow: #FFCC00;
+            --yellow-dark: #e6b800;
+            --black: #111111;
+            --dark: #1a1a1a;
+            --gray: #f5f5f5;
+            --white: #ffffff;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--gray);
+            color: var(--black);
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--black);
+            color: var(--white);
+            padding: 15px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--yellow);
+            text-decoration: none;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=1200&q=80') center/cover;
+            color: var(--white);
+            padding: 60px 5%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+        }
+
+        .order-box {
+            background: var(--white);
+            color: var(--black);
+            padding: 30px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .order-box h2 {
+            margin-bottom: 20px;
+            font-size: 22px;
+            text-align: center;
+            color: var(--dark);
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--yellow);
+        }
+
+        .main-btn {
+            width: 100%;
+            background-color: var(--yellow);
+            color: var(--black);
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .main-btn:hover {
+            background-color: var(--yellow-dark);
+        }
+
+        .notice {
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="logo">🚕 Taxi UZ</a>
+    </header>
+
+    <section class="hero">
+        <div class="order-box">
+            <h2>🚕 Taksi buyurtma qilish</h2>
+
+            <div class="input-group">
+                <label for="name">👤 Ismingiz</label>
+                <input type="text" id="name" placeholder="Ismingizni kiriting">
+            </div>
+
+            <div class="input-group">
+                <label for="phone">📞 Telefon raqamingiz</label>
+                <input type="tel" id="phone" placeholder="+998 90 123 45 67">
+            </div>
+
+            <div class="input-group">
+                <label for="from_loc">📍 Qayerdan?</label>
+                <input type="text" id="from_loc" placeholder="Manzilingizni kiriting">
+            </div>
+
+            <div class="input-group">
+                <label for="to_loc">🎯 Qayerga?</label>
+                <input type="text" id="to_loc" placeholder="Boradigan manzilingiz">
+            </div>
+
+            <div class="input-group">
+                <label for="tariff">🚕 Tarif</label>
+                <select id="tariff">
+                    <option value="standard">Standard</option>
+                    <option value="comfort">Comfort</option>
+                    <option value="biznes">Biznes</option>
+                </select>
+            </div>
+
+            <button class="main-btn" onclick="sendOrder()">
+                🚕 TAKSI BUYURTMA QILISH
+            </button>
+
+            <div class="notice">
+                Buyurtmangiz operator tizimiga yuboriladi.
+            </div>
+        </div>
+    </section>
+
+    <script>
+    async function sendOrder() {
+        const name = document.getElementById("name").value.trim();
+        const phone = document.getElementById("phone").value.trim();
+        const from_loc = document.getElementById("from_loc").value.trim();
+        const to_loc = document.getElementById("to_loc").value.trim();
+        const tariff = document.getElementById("tariff").value;
+
+        if (!name || !phone || !from_loc || !to_loc) {
+            alert("Iltimos, barcha maydonlarni to‘ldiring.");
+            return;
+        }
+
+        try {
+            const response = await fetch("http://127.0.0.1:8000/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name: name,
+                    phone: phone,
+                    from_loc: from_loc,
+                    to_loc: to_loc,
+                    tariff: tariff
+                })
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
+                alert(
+                    "✅ Buyurtma qabul qilindi!\n\n" +
+                    "Buyurtma ID: " + result.order_id + "\n" +
+                    "Ism: " + result.name + "\n" +
+                    "Yo‘nalish: " + result.from + " → " + result.to
+                );
+            } else {
+                alert("❌ Xatolik yuz berdi.\n" + JSON.stringify(result));
+            }
+        } catch (error) {
+            console.error("Xatolik:", error);
+            alert("❌ Server bilan aloqa o‘rnatib bo‘lmadi!\n\nFastAPI server ishlayotganini tekshiring.");
+        }
+    }
+    </script>
+
+</body>
+</html>
